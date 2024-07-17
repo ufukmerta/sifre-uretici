@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Web.Security;
 using System.Windows.Forms;
 
@@ -14,6 +15,8 @@ namespace WFASifreUretici
         {
             InitializeComponent();
         }
+        internal bool altForm = false;
+
         private void FormAna_Load(object sender, EventArgs e)
         {
             Version version = Assembly.GetExecutingAssembly().GetName().Version;
@@ -107,7 +110,7 @@ namespace WFASifreUretici
         {
 
             kacinilacakKarakterListesi.Clear();
-            char[] charArr = txt_kacinilacakKarakterler.Text.ToCharArray();
+            char[] charArr = txt_KacinilacakKarakterler.Text.ToCharArray();
             foreach (char ch in charArr) kacinilacakKarakterListesi.Add(ch.ToString());
             txt_Sifre.Text = "";
             if (karakterSayisi < 8 || karakterSayisi > 128) throw new ArgumentOutOfRangeException("length");
@@ -118,6 +121,11 @@ namespace WFASifreUretici
                 sifre = IstenmeyenKarakterleriSil(sifre);
             } while (sifre.Length < karakterSayisi);
             sifre = ayniKarakterleriKontrolEt(sifre, karakterSayisi);
+            if (sifre.Length < karakterSayisi)
+            {
+                SifreUret();
+                return;
+            }
             txt_Sifre.Text = sifre;
             if (!sifreSonuSayiEkleme)
             {
@@ -167,14 +175,14 @@ namespace WFASifreUretici
             }
             return sifre;
         }
-        string geciciSifre;
+
         public string ayniKarakterleriKontrolEt(string sifre, int karakterSayisi)
         {
             bool sifreDegistiMi = false;
             string geciciSifre = sifre.Substring(0, karakterSayisi);
             foreach (char c in geciciSifre)
             {
-                if (maxAyniKarakterSayisi + 1 < (geciciSifre.Split(Convert.ToChar(c)).Length - 1))
+                if (maxAyniKarakterSayisi + 1 < geciciSifre.Split(Convert.ToChar(c)).Length - 1)
                 {
                     geciciSifre = geciciSifre.Remove(geciciSifre.LastIndexOf(c), 1);
                     sifreDegistiMi = true;
@@ -189,22 +197,15 @@ namespace WFASifreUretici
 
         public void SayiUret()
         {
-            var karakterler = new string[] { "a", "b", "c", "d", "e", "f", "g", "h", "i","I", "j", "k", "l", "m", "n", "o", "p", "q",
-                "r", "s", "t", "u", "v", "w", "x", "y", "z","!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "-", "_", "+", "=",
-                "{", "}", "[", "]", "|", "\\", ":", ";", "<", ">", "/", "?", "." };
-
             string sayi = "";
             do
             {
                 sayi += Membership.GeneratePassword(128, 25);
-                foreach (string r in karakterler)
-                {
-                    sayi = sayi.Replace(r, string.Empty);
-                    sayi = sayi.Replace(r.ToUpper(), string.Empty);
-                }
+                sayi = Regex.Replace(sayi, "[^0-9]", "");
             } while (sayi.Length < rakamSayisi);
             txt_Sifre.Text += sayi.Substring(0, rakamSayisi);
         }
+
         private void btn_SifreUret_Click(object sender, EventArgs e)
         {
             SifreUret();
@@ -212,24 +213,28 @@ namespace WFASifreUretici
 
         private void btn_Kaydet_Click(object sender, EventArgs e)
         {
-            FormKaydet formKaydet = new FormKaydet();
-            formKaydet.txt_Sifre.Text = txt_Sifre.Text;
-            formKaydet.ShowDialog();
+            using (FormKaydet formKaydet = new FormKaydet())
+            {
+                formKaydet.txt_Sifre.Text = txt_Sifre.Text;
+                formKaydet.ShowDialog();
+            }
         }
 
         private void btn_Listele_Click(object sender, EventArgs e)
         {
-            FormListele formListele = new FormListele();
-            formListele.ShowDialog();
+            using (FormListele formListele = new FormListele())
+            {
+                formListele.ShowDialog();
+            }
         }
 
         private void btn_TopluUret_Click(object sender, EventArgs e)
         {
-            using (FormTopluUretmeAdetGiris formTopluSayi = new FormTopluUretmeAdetGiris())
+            using (FormTopluUretmeAdetGiris formTopluAdet = new FormTopluUretmeAdetGiris())
             {
-                formTopluSayi.cb_OzelKarakter = cb_OzelKarakter.Checked;
-                formTopluSayi.ExcChars = txt_kacinilacakKarakterler.Text.ToCharArray();
-                formTopluSayi.ShowDialog();
+                formTopluAdet.cb_OzelKarakter = cb_OzelKarakter.Checked;
+                formTopluAdet.ExcChars = txt_KacinilacakKarakterler.Text.ToCharArray();
+                formTopluAdet.ShowDialog();
             }
         }
 
@@ -237,11 +242,11 @@ namespace WFASifreUretici
         {
             if (agresifMod)
             {
-                toolTip1.SetToolTip(txt_Sifre, "Agresif mod aktif kapatmak için ayarlar ekranına gidiniz.");
+                toolTip_txt_Sifre.SetToolTip(txt_Sifre, "Agresif mod aktif kapatmak için ayarlar ekranına gidiniz.");
             }
             else
             {
-                toolTip1.SetToolTip(txt_Sifre, null);
+                toolTip_txt_Sifre.SetToolTip(txt_Sifre, null);
             }
         }
 
@@ -254,15 +259,11 @@ namespace WFASifreUretici
             AyarlariGetir();
         }
 
-        internal bool altForm = false;
         private void cb_OzelKarakter_CheckedChanged(object sender, EventArgs e)
         {
             if (cb_OzelKarakter.Checked && !altForm)
             {
-                if (txt_kacinilacakKarakterler.TextLength > 0) _ = MessageBox.Show("Bu modda özel karakter olmadan rakamlardan ve harflerden " +
-                    "şifre oluşturulmaktadır. Bu nedenle istenmeyen karakterden kaçınma özelliği ve agresif mod burada çalışmamaktadır.",
-                    "Kaçınılacak Karakter Bulundu", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                else if (agresifMod)
+                if (txt_KacinilacakKarakterler.TextLength > 0 || agresifMod)
                 {
                     MessageBox.Show("Bu modda özel karakter olmadan rakamlardan ve harflerden " +
                     "şifre oluşturulmaktadır. Bu nedenle istenmeyen karakterden kaçınma özelliği ve agresif mod burada çalışmamaktadır.",
@@ -271,7 +272,7 @@ namespace WFASifreUretici
                 agresifMod = false;
                 txt_Sifre.BackColor = SystemColors.Window;
                 txt_Sifre.ForeColor = SystemColors.WindowText;
-                txt_kacinilacakKarakterler.Enabled = false;
+                txt_KacinilacakKarakterler.Enabled = false;
             }
             else
             {
@@ -282,9 +283,8 @@ namespace WFASifreUretici
                     txt_Sifre.ForeColor = Color.White;
 
                 }
-                txt_kacinilacakKarakterler.Enabled = true;
+                txt_KacinilacakKarakterler.Enabled = true;
             }
-
         }
     }
 }
