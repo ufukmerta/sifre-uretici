@@ -20,7 +20,7 @@ namespace WFASifreUretici
                 formAna.Hide();
                 formAna.altForm = true;
                 formAna.cb_OzelKarakter.Checked = cb_OzelKarakter;
-                formAna.txt_kacinilacakKarakterler.Text = new string(kacinilacakKarakterler);
+                formAna.txt_KacinilacakKarakterler.Text = new string(kacinilacakKarakterler);
                 formAna.SifreUret();
                 for (int i = 1; i <= adet; i++)
                 {
@@ -38,13 +38,15 @@ namespace WFASifreUretici
             {
                 formKaydet.Show();
                 formKaydet.Hide();
+                int sayac = 0;
                 for (int i = 0; i <= dgv_Sifre.RowCount - 1; i++)
                 {
                     formKaydet.txt_Sifre.Text = dgv_Sifre.Rows[i].Cells[1].Value.ToString();
                     formKaydet.txt_SifreNotu.Text = dgv_Sifre.Rows[i].Cells[2].Value.ToString();
-                    formKaydet.Kaydet(true);
+                    sayac += formKaydet.Kaydet(true);
                 }
                 formKaydet.Close();
+                MessageBox.Show("Üretilen Şifre adedi: " + dgv_Sifre.RowCount + ". Kaydedilen şifre adedi: " + sayac);
             }
         }
 

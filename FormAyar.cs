@@ -128,7 +128,6 @@ namespace WFASifreUretici
                 if (dialogResultKaydet == DialogResult.Yes) VarsayılanAyarlaraDon();
                 else OncekiAyarlaraDon();
             }
-
         }
 
         private void OncekiAyarlaraDon()
@@ -144,7 +143,7 @@ namespace WFASifreUretici
         {
             MessageBox.Show("Karakter adedi, şifrenin baş kısmında bulunan harflerden, rakamlardan veya özel karakterlerden oluşan kısmın adedini " +
                 "ayarlamaktadır.\n" +
-                "Max Aynı Karakter Sayısı, şifre için bulunan bir karakterden en çok kaç adet olabileceğini ayarlamaktadır.\n" +
+                "Max Aynı Karakter Sayısı, şifre içindeki bir karakterden en çok kaç adet olabileceğini ayarlamaktadır.\n" +
                 "Sayı adedi, şifrenin ilk kısmından sonra gelen - ile birlikte '-1234' gibi sayı bulunan kısımdır. Bu sayının kaç basamaklı olduğunu " +
                 "ayarlamaktadır.\n" +
                 "Şifre sonunda - ile sayı üretme, üstte belirtilen olayı devre dışı bırakmaktadır ve şifre sadece ilk kısımdan oluşmaktadır.\n" +

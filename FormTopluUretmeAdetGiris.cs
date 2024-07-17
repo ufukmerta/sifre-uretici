@@ -16,12 +16,12 @@ namespace WFASifreUretici
         {
             using (FormTopluUretme formToplu = new FormTopluUretme())
             {
-                formToplu.adet = Convert.ToInt32(numPassPcs.Value);
+                formToplu.adet = Convert.ToInt32(num_SifreAdet.Value);
                 formToplu.cb_OzelKarakter = cb_OzelKarakter;
-                formToplu.kacinilacakKarakterListesi = ExcChars;
+                formToplu.kacinilacakKarakterler = ExcChars;
                 formToplu.ShowDialog();
             }
-            this.Close();
+            Close();
         }
     }
 }

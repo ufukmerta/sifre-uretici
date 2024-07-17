@@ -116,7 +116,7 @@ namespace WFASifreUretici
                     for (int i = 0; i <= dgv_Sifre.RowCount - 1; i++)
                     {
                         if (!export) sw.WriteLine(dgv_Sifre.Rows[i].Cells[1].Value.ToString() + "\t" + dgv_Sifre.Rows[i].Cells[2].Value.ToString());
-                        else sw.WriteLine((i + 1) + ". pw\nNot: " + dgv_Sifre.Rows[i].Cells[2].Value.ToString() + "\nŞifre: " + dgv_Sifre.Rows[i].Cells[1].Value.ToString() + "\n");
+                        else sw.WriteLine((i + 1) + ". Şifre \nNot: " + dgv_Sifre.Rows[i].Cells[2].Value.ToString() + "\nŞifre: " + dgv_Sifre.Rows[i].Cells[1].Value.ToString() + "\n");
                     }
                 }
                 MessageBox.Show("Kayıt işlemi başarılı bir şekilde tamamlandı.", "İşlem Bilgisi", MessageBoxButtons.OK, MessageBoxIcon.Information);
