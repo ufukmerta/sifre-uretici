@@ -14,7 +14,7 @@ namespace WFASifreUretici
         {
             Kaydet();
         }
-        public void Kaydet(bool altForm = false)
+        public int Kaydet(bool altForm = false)
         {
             try
             {
@@ -27,9 +27,13 @@ namespace WFASifreUretici
                         sw.Flush();
                         sw.Close();
                         fs.Close();
-                        if (altForm)
+                        if (!altForm)
                         {
                             MessageBox.Show("Şifre ve not bilgisi başarılı bir şekilde kaydedildi.", "Kaydedildi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                        if (altForm)
+                        {
+                            return 1;
                         }
                     }
                     Close();
@@ -37,8 +41,13 @@ namespace WFASifreUretici
             }
             catch (Exception ex)
             {
+                if (altForm)
+                {
+                    return 0;
+                }
                 MessageBox.Show("Şifre ve not bilgisi kaydedilirken bir hata oluştu. Hata bilgisi: " + ex.Message, "Kaydedilemedi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+            return 0;
         }
     }
 }
