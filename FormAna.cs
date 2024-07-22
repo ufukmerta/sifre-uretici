@@ -63,23 +63,23 @@ namespace WFASifreUretici
                             {
                                 sr.Close();
                                 MessageBox.Show("Ayarlar okunurken bir sorun oluştu. Bu nedenle varsayılan ayarlar geçerli olacaktır.", "Hata Oluştu", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                VarsayilanAyarlaraDon();
+                                VarsayılanAyarlaraDon();
                             }
                         }
                         fs.Close();
                         AyarlariDogrula();
                     }
                 }
-                else VarsayilanAyarlaraDon();
+                else VarsayılanAyarlaraDon();
             }
             catch (Exception e)
             {
                 MessageBox.Show("Ayarlar okunurken bir sorun oluştu. Bu nedenle varsayılan ayarlar geçerli olacaktır. Hata detayı: " + e.Message, "Hata Oluştu", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                VarsayilanAyarlaraDon();
+                VarsayılanAyarlaraDon();
             }
         }
 
-        void VarsayilanAyarlaraDon()
+        void VarsayılanAyarlaraDon()
         {
             string dosyaKonumu = Path.Combine(Application.StartupPath, "ayar.ini");
             using (FileStream fs = new FileStream(dosyaKonumu, FileMode.Create, FileAccess.Write))
@@ -101,7 +101,7 @@ namespace WFASifreUretici
             if (karakterSayisi < 8 || karakterSayisi > 16) hata = true;
             if (rakamSayisi < 4 || rakamSayisi > 8) hata = true;
             if (maxAyniKarakterSayisi < 0 || maxAyniKarakterSayisi > 2) hata = true;
-            if (hata) VarsayilanAyarlaraDon();
+            if (hata) VarsayılanAyarlaraDon();
         }
 
         List<string> kacinilacakKarakterListesi = new List<string>();
@@ -112,14 +112,15 @@ namespace WFASifreUretici
             kacinilacakKarakterListesi.Clear();
             char[] charArr = txt_KacinilacakKarakterler.Text.ToCharArray();
             foreach (char ch in charArr) kacinilacakKarakterListesi.Add(ch.ToString());
-            txt_Sifre.Text = "";            
+            txt_Sifre.Text = "";
+            if (karakterSayisi < 8 || karakterSayisi > 128) throw new ArgumentOutOfRangeException("length");
             do
             {
                 sifre = "";
                 sifre += Membership.GeneratePassword(128, 25);
                 sifre = IstenmeyenKarakterleriSil(sifre);
             } while (sifre.Length < karakterSayisi);
-            sifre = AyniKarakterleriKontrolEt(sifre, karakterSayisi);
+            sifre = ayniKarakterleriKontrolEt(sifre, karakterSayisi);
             if (sifre.Length < karakterSayisi)
             {
                 SifreUret();
@@ -175,7 +176,7 @@ namespace WFASifreUretici
             return sifre;
         }
 
-        public string AyniKarakterleriKontrolEt(string sifre, int karakterSayisi)
+        public string ayniKarakterleriKontrolEt(string sifre, int karakterSayisi)
         {
             bool sifreDegistiMi = false;
             string geciciSifre = sifre.Substring(0, karakterSayisi);
@@ -191,7 +192,7 @@ namespace WFASifreUretici
             { return geciciSifre; }
             int sayi = karakterSayisi;
             geciciSifre += sifre.Substring(++sayi);
-            return AyniKarakterleriKontrolEt(geciciSifre, sayi);
+            return ayniKarakterleriKontrolEt(geciciSifre, sayi);
         }
 
         public void SayiUret()
