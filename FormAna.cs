@@ -108,18 +108,17 @@ namespace WFASifreUretici
         string sifre;
         public void SifreUret()
         {
-
             kacinilacakKarakterListesi.Clear();
             char[] charArr = txt_KacinilacakKarakterler.Text.ToCharArray();
             foreach (char ch in charArr) kacinilacakKarakterListesi.Add(ch.ToString());
-            txt_Sifre.Text = "";            
+            txt_Sifre.Text = "";
             do
             {
                 sifre = "";
                 sifre += Membership.GeneratePassword(128, 25);
                 sifre = IstenmeyenKarakterleriSil(sifre);
             } while (sifre.Length < karakterSayisi);
-            sifre = AyniKarakterleriKontrolEt(sifre, karakterSayisi);
+            sifre = AyniKarakterleriKontrolEt(sifre);
             if (sifre.Length < karakterSayisi)
             {
                 SifreUret();
@@ -175,23 +174,22 @@ namespace WFASifreUretici
             return sifre;
         }
 
-        public string AyniKarakterleriKontrolEt(string sifre, int karakterSayisi)
+        public string AyniKarakterleriKontrolEt(string sifre)
         {
             bool sifreDegistiMi = false;
             string geciciSifre = sifre.Substring(0, karakterSayisi);
             foreach (char c in geciciSifre)
             {
-                if (maxAyniKarakterSayisi + 1 < geciciSifre.Split(Convert.ToChar(c)).Length - 1)
+                if (maxAyniKarakterSayisi + 1 < geciciSifre.Split(c).Length - 1)
                 {
                     geciciSifre = geciciSifre.Remove(geciciSifre.LastIndexOf(c), 1);
                     sifreDegistiMi = true;
                 }
             }
             if (!sifreDegistiMi)
-            { return geciciSifre; }
-            int sayi = karakterSayisi;
-            geciciSifre += sifre.Substring(++sayi);
-            return AyniKarakterleriKontrolEt(geciciSifre, sayi);
+            { return geciciSifre; }            
+            geciciSifre += sifre.Substring(karakterSayisi);
+            return AyniKarakterleriKontrolEt(geciciSifre);
         }
 
         public void SayiUret()
