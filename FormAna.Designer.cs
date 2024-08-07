@@ -35,7 +35,7 @@ namespace WFASifreUretici
             this.txt_KacinilacakKarakterler = new System.Windows.Forms.TextBox();
             this.lbl_Sİfre = new System.Windows.Forms.Label();
             this.lbl_KacinilacakKarakter = new System.Windows.Forms.Label();
-            this.cb_OzelKarakter = new System.Windows.Forms.CheckBox();
+            this.cb_OzelKarakterYok = new System.Windows.Forms.CheckBox();
             this.btn_TopluUret = new System.Windows.Forms.Button();
             this.btn_Listele = new System.Windows.Forms.Button();
             this.btn_Kaydet = new System.Windows.Forms.Button();
@@ -80,16 +80,16 @@ namespace WFASifreUretici
             this.lbl_KacinilacakKarakter.TabIndex = 21;
             this.lbl_KacinilacakKarakter.Text = "Kaçınılacak karakterleri giriniz:";
             // 
-            // cb_OzelKarakter
+            // cb_OzelKarakterYok
             // 
-            this.cb_OzelKarakter.AutoSize = true;
-            this.cb_OzelKarakter.Location = new System.Drawing.Point(15, 68);
-            this.cb_OzelKarakter.Name = "cb_OzelKarakter";
-            this.cb_OzelKarakter.Size = new System.Drawing.Size(138, 17);
-            this.cb_OzelKarakter.TabIndex = 3;
-            this.cb_OzelKarakter.Text = "Özel Karakter İçermesin";
-            this.cb_OzelKarakter.UseVisualStyleBackColor = true;
-            this.cb_OzelKarakter.CheckedChanged += new System.EventHandler(this.cb_OzelKarakter_CheckedChanged);
+            this.cb_OzelKarakterYok.AutoSize = true;
+            this.cb_OzelKarakterYok.Location = new System.Drawing.Point(15, 68);
+            this.cb_OzelKarakterYok.Name = "cb_OzelKarakterYok";
+            this.cb_OzelKarakterYok.Size = new System.Drawing.Size(138, 17);
+            this.cb_OzelKarakterYok.TabIndex = 3;
+            this.cb_OzelKarakterYok.Text = "Özel Karakter İçermesin";
+            this.cb_OzelKarakterYok.UseVisualStyleBackColor = true;
+            this.cb_OzelKarakterYok.CheckedChanged += new System.EventHandler(this.cb_OzelKarakter_CheckedChanged);
             // 
             // btn_TopluUret
             // 
@@ -151,7 +151,7 @@ namespace WFASifreUretici
             this.Controls.Add(this.btn_TopluUret);
             this.Controls.Add(this.btn_Listele);
             this.Controls.Add(this.btn_Kaydet);
-            this.Controls.Add(this.cb_OzelKarakter);
+            this.Controls.Add(this.cb_OzelKarakterYok);
             this.Controls.Add(this.btn_Ayarlar);
             this.Controls.Add(this.lbl_KacinilacakKarakter);
             this.Controls.Add(this.lbl_Sİfre);
@@ -181,7 +181,7 @@ namespace WFASifreUretici
         private System.Windows.Forms.Button btn_Listele;
         private System.Windows.Forms.Button btn_TopluUret;
         internal System.Windows.Forms.TextBox txt_Sifre;
-        internal System.Windows.Forms.CheckBox cb_OzelKarakter;
+        internal System.Windows.Forms.CheckBox cb_OzelKarakterYok;
         private System.Windows.Forms.ToolTip toolTip_txt_Sifre;
         internal System.Windows.Forms.TextBox txt_KacinilacakKarakterler;
     }

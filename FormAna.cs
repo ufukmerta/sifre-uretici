@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
 using System.Reflection;
-using System.Text.RegularExpressions;
-using System.Web.Security;
 using System.Windows.Forms;
 
 namespace WFASifreUretici
@@ -14,193 +11,41 @@ namespace WFASifreUretici
         public FormAna()
         {
             InitializeComponent();
+            ayarlar = new Ayarlar();
+            sifreUretici = new SifreUretici(ayarlar);
         }
         internal bool altForm = false;
+        Ayarlar ayarlar;
+        SifreUretici sifreUretici;
 
         private void FormAna_Load(object sender, EventArgs e)
         {
             Version version = Assembly.GetExecutingAssembly().GetName().Version;
             this.Text = String.Concat(this.Text, version.Major, ".", version.Minor, ".", version.Build);
-            AyarlariGetir();
+            AyarlardanGetir();
             if (!altForm) SifreUret();
         }
-
-        int karakterSayisi = 10, rakamSayisi = 4, maxAyniKarakterSayisi = 1;
-        bool sifreSonuSayiEkleme = false, agresifMod, agresifModIlkDurum;
-        void AyarlariGetir()
+        bool agresifMod = false;
+        void AyarlardanGetir()
         {
-            try
+            agresifMod = ayarlar.AgresifMod;
+            if (agresifMod && !cb_OzelKarakterYok.Checked)
             {
-                string dosyaKonumu = Path.Combine(Application.StartupPath, "ayar.ini");
-                if (File.Exists(dosyaKonumu))
-                {
-                    using (FileStream fs = new FileStream(dosyaKonumu, FileMode.Open, FileAccess.Read))
-                    {
-                        using (StreamReader sr = new StreamReader(fs))
-                        {
-                            karakterSayisi = Convert.ToInt32(sr.ReadLine());
-                            rakamSayisi = Convert.ToInt32(sr.ReadLine());
-                            maxAyniKarakterSayisi = Convert.ToInt32(sr.ReadLine());
-                            string metin = sr.ReadLine();
-                            string metin2 = sr.ReadLine();
-                            if (metin != null && metin2 != null)
-                            {
-                                sifreSonuSayiEkleme = Convert.ToBoolean(metin);
-                                agresifModIlkDurum = agresifMod = Convert.ToBoolean(metin2);
-                                if (agresifMod)
-                                {
-                                    txt_Sifre.BackColor = Color.LightCoral;
-                                    txt_Sifre.ForeColor = Color.White;
-                                }
-                                else
-                                {
-                                    txt_Sifre.BackColor = SystemColors.Window;
-                                    txt_Sifre.ForeColor = SystemColors.WindowText;
-                                }
-                                sr.Close();
-                            }
-                            else
-                            {
-                                sr.Close();
-                                MessageBox.Show("Ayarlar okunurken bir sorun oluştu. Bu nedenle varsayılan ayarlar geçerli olacaktır.", "Hata Oluştu", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                VarsayilanAyarlaraDon();
-                            }
-                        }
-                        fs.Close();
-                        AyarlariDogrula();
-                    }
-                }
-                else VarsayilanAyarlaraDon();
+                txt_Sifre.BackColor = Color.LightCoral;
+                txt_Sifre.ForeColor = Color.White;
             }
-            catch (Exception e)
+            else
             {
-                MessageBox.Show("Ayarlar okunurken bir sorun oluştu. Bu nedenle varsayılan ayarlar geçerli olacaktır. Hata detayı: " + e.Message, "Hata Oluştu", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                VarsayilanAyarlaraDon();
+                txt_Sifre.BackColor = SystemColors.Window;
+                txt_Sifre.ForeColor = SystemColors.WindowText;
             }
-        }
-
-        void VarsayilanAyarlaraDon()
-        {
-            string dosyaKonumu = Path.Combine(Application.StartupPath, "ayar.ini");
-            using (FileStream fs = new FileStream(dosyaKonumu, FileMode.Create, FileAccess.Write))
-            {
-                using (StreamWriter sw = new StreamWriter(fs))
-                {
-                    sw.Write("10\n4\n1\nfalse\nfalse");
-                    sw.Flush();
-                    sw.Close();
-                }
-                fs.Close();
-            }
-            AyarlariGetir();
-        }
-
-        void AyarlariDogrula()
-        {
-            bool hata = false;
-            if (karakterSayisi < 8 || karakterSayisi > 16) hata = true;
-            if (rakamSayisi < 4 || rakamSayisi > 8) hata = true;
-            if (maxAyniKarakterSayisi < 0 || maxAyniKarakterSayisi > 2) hata = true;
-            if (hata) VarsayilanAyarlaraDon();
         }
 
         List<string> kacinilacakKarakterListesi = new List<string>();
-        string sifre;
+
         public void SifreUret()
         {
-            kacinilacakKarakterListesi.Clear();
-            char[] charArr = txt_KacinilacakKarakterler.Text.ToCharArray();
-            foreach (char ch in charArr) kacinilacakKarakterListesi.Add(ch.ToString());
-            txt_Sifre.Text = "";
-            do
-            {
-                sifre = "";
-                sifre += Membership.GeneratePassword(128, 25);
-                sifre = IstenmeyenKarakterleriSil(sifre);
-            } while (sifre.Length < karakterSayisi);
-            sifre = AyniKarakterleriKontrolEt(sifre);
-            if (sifre.Length < karakterSayisi)
-            {
-                SifreUret();
-                return;
-            }
-            txt_Sifre.Text = sifre;
-            if (!sifreSonuSayiEkleme)
-            {
-                txt_Sifre.Text += "-";
-                SayiUret();
-            }
-        }
-
-        public string IstenmeyenKarakterleriSil(string sifre)
-        {
-            bool ozelKarakterIceriyorMu = false;
-            string[] ozelKarakterler = new string[] { "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "-", "_", "+", "=", "{", "}", "[", "]", "|", "\\", ":", ";", "<", ">", "/", "?", "." };
-            string[] benzerKarakterler = new string[] { "(", ")", "0", "O", "o", "1", "i", "I", "l", "|", "!", ":", ";" };
-            foreach (string c in benzerKarakterler)
-                sifre = sifre.Replace(c, string.Empty);
-
-            if (cb_OzelKarakter.Checked)
-            {
-                foreach (string r in ozelKarakterler)
-                    sifre = sifre.Replace(r, string.Empty);
-            }
-            if (!cb_OzelKarakter.Checked)
-            {
-                if (kacinilacakKarakterListesi.Count > 0)
-                {
-                    foreach (string r in kacinilacakKarakterListesi)
-                    {
-                        sifre = sifre.Replace(r.ToLower(), string.Empty);
-                        sifre = sifre.Replace(r.ToUpper(), string.Empty);
-                    }
-                }
-                if (agresifMod)
-                {
-                    foreach (var ch in ozelKarakterler)
-                    {
-                        if (sifre.Substring(0, karakterSayisi).Contains(ch))
-                        {
-                            ozelKarakterIceriyorMu = true;
-                            break;
-                        }
-                    }
-                    if (!ozelKarakterIceriyorMu)
-                    {
-                        sifre = "";
-                    }
-                }
-            }
-            return sifre;
-        }
-
-        public string AyniKarakterleriKontrolEt(string sifre)
-        {
-            bool sifreDegistiMi = false;
-            string geciciSifre = sifre.Substring(0, karakterSayisi);
-            foreach (char c in geciciSifre)
-            {
-                if (maxAyniKarakterSayisi + 1 < geciciSifre.Split(c).Length - 1)
-                {
-                    geciciSifre = geciciSifre.Remove(geciciSifre.LastIndexOf(c), 1);
-                    sifreDegistiMi = true;
-                }
-            }
-            if (!sifreDegistiMi)
-            { return geciciSifre; }            
-            geciciSifre += sifre.Substring(karakterSayisi);
-            return AyniKarakterleriKontrolEt(geciciSifre);
-        }
-
-        public void SayiUret()
-        {
-            string sayi = "";
-            do
-            {
-                sayi += Membership.GeneratePassword(128, 25);
-                sayi = Regex.Replace(sayi, "[^0-9]", "");
-            } while (sayi.Length < rakamSayisi);
-            txt_Sifre.Text += sayi.Substring(0, rakamSayisi);
+            txt_Sifre.Text = sifreUretici.Uret(txt_KacinilacakKarakterler.Text, cb_OzelKarakterYok.Checked);
         }
 
         private void btn_SifreUret_Click(object sender, EventArgs e)
@@ -229,8 +74,8 @@ namespace WFASifreUretici
         {
             using (FormTopluUretmeAdetGiris formTopluAdet = new FormTopluUretmeAdetGiris())
             {
-                formTopluAdet.cb_OzelKarakter = cb_OzelKarakter.Checked;
-                formTopluAdet.ExcChars = txt_KacinilacakKarakterler.Text.ToCharArray();
+                formTopluAdet.ozelKarakterYok = cb_OzelKarakterYok.Checked;
+                formTopluAdet.kacinilacakKarakterler = txt_KacinilacakKarakterler.Text;
                 formTopluAdet.ShowDialog();
             }
         }
@@ -239,7 +84,7 @@ namespace WFASifreUretici
         {
             if (agresifMod)
             {
-                toolTip_txt_Sifre.SetToolTip(txt_Sifre, "Agresif mod aktif kapatmak için ayarlar ekranına gidiniz.");
+                toolTip_txt_Sifre.SetToolTip(txt_Sifre, "Agresif mod aktif. Kapatmak için ayarlar ekranına gidiniz.");
             }
             else
             {
@@ -253,12 +98,13 @@ namespace WFASifreUretici
             {
                 formAyar.ShowDialog();
             }
-            AyarlariGetir();
+            ayarlar.AyarlariGetir();
+            AyarlardanGetir();
         }
 
         private void cb_OzelKarakter_CheckedChanged(object sender, EventArgs e)
         {
-            if (cb_OzelKarakter.Checked && !altForm)
+            if (cb_OzelKarakterYok.Checked && !altForm)
             {
                 if (txt_KacinilacakKarakterler.TextLength > 0 || agresifMod)
                 {
@@ -273,7 +119,7 @@ namespace WFASifreUretici
             }
             else
             {
-                agresifMod = agresifModIlkDurum;
+                agresifMod = ayarlar.AgresifMod;
                 if (agresifMod)
                 {
                     txt_Sifre.BackColor = Color.LightCoral;

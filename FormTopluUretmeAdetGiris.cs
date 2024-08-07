@@ -8,17 +8,16 @@ namespace WFASifreUretici
         public FormTopluUretmeAdetGiris()
         {
             InitializeComponent();
-        }
-
-        internal bool cb_OzelKarakter = false;
-        internal char[] ExcChars = new char[15];
+        }                
+        internal bool ozelKarakterYok = false;
+        internal string kacinilacakKarakterler="";
         private void btn_createPassword_Click(object sender, EventArgs e)
         {
             using (FormTopluUretme formToplu = new FormTopluUretme())
             {
                 formToplu.adet = Convert.ToInt32(num_SifreAdet.Value);
-                formToplu.cb_OzelKarakter = cb_OzelKarakter;
-                formToplu.kacinilacakKarakterler = ExcChars;
+                formToplu.ozelKarakterYok = ozelKarakterYok;
+                formToplu.kacinilacakKarakterler = kacinilacakKarakterler;
                 formToplu.ShowDialog();
             }
             Close();

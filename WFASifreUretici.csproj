@@ -66,8 +66,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -79,6 +81,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Ayarlar.cs" />
+    <Compile Include="ISifreUretici.cs" />
+    <Compile Include="SifreUretici.cs" />
     <Compile Include="FormAna.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -115,6 +120,7 @@
     <Compile Include="FormTopluUretmeAdetGiris.Designer.cs">
       <DependentUpon>FormTopluUretmeAdetGiris.cs</DependentUpon>
     </Compile>
+    <Compile Include="IAyarlar.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="FormAna.resx">

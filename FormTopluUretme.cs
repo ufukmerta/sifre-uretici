@@ -8,27 +8,20 @@ namespace WFASifreUretici
         public FormTopluUretme()
         {
             InitializeComponent();
+            ayarlar = new Ayarlar();
+            sifreUretici = new SifreUretici(ayarlar);
         }
-        internal bool cb_OzelKarakter = false;
-        internal char[] kacinilacakKarakterler = new char[15];
+        Ayarlar ayarlar;
+        SifreUretici sifreUretici;
+        internal bool ozelKarakterYok = false;
+        internal string kacinilacakKarakterler = "";
         internal int adet = 0;
         private void FormTopluUretme_Load(object sender, EventArgs e)
         {
-            using (FormAna formAna = new FormAna())
+            for (int i = 1; i <= adet; i++)
             {
-                formAna.Show();
-                formAna.Hide();
-                formAna.altForm = true;
-                formAna.cb_OzelKarakter.Checked = cb_OzelKarakter;
-                formAna.txt_KacinilacakKarakterler.Text = new string(kacinilacakKarakterler);
-                formAna.SifreUret();
-                for (int i = 1; i <= adet; i++)
-                {
-                    formAna.SifreUret();
-                    object[] satir = { i, formAna.txt_Sifre.Text, "" };
-                    dgv_Sifre.Rows.Add(satir);
-                }
-                formAna.Close();
+                object[] satir = { i, sifreUretici.Uret(kacinilacakKarakterler, ozelKarakterYok), "" };
+                dgv_Sifre.Rows.Add(satir);
             }
         }
 
@@ -103,7 +96,10 @@ namespace WFASifreUretici
                 {
                     if (dgv_Sifre.SelectedRows.Count > 0)
                     {
-                        dgv_Sifre.Rows.RemoveAt(dgv_Sifre.SelectedRows[0].Index);
+                        foreach (DataGridViewRow item in dgv_Sifre.SelectedRows)
+                            dgv_Sifre.Rows.RemoveAt(item.Index);
+                        MessageBox.Show("Seçilen öge(ler) listeden silindi.", "İşlem Bilgisi",
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);                                                
                     }
                     else MessageBox.Show("Silme işlemi için önce öge seçmeniz gerekmektedir.", "İşlem Bilgisi",
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -111,7 +107,7 @@ namespace WFASifreUretici
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message, "Hata! Silme işlemi başarısız", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
+                }                
             }
         }
 

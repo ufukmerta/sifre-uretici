@@ -67,7 +67,6 @@
             this.Sifre,
             this.Not});
             this.dgv_Sifre.Location = new System.Drawing.Point(12, 12);
-            this.dgv_Sifre.MultiSelect = false;
             this.dgv_Sifre.Name = "dgv_Sifre";
             this.dgv_Sifre.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.dgv_Sifre.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
