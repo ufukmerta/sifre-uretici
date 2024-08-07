@@ -10,6 +10,7 @@ namespace WFASifreUretici
         {
             InitializeComponent();
         }
+        Ayarlar ayarlar = new Ayarlar();
 
         private void FormAyar_Load(object sender, EventArgs e)
         {
@@ -19,124 +20,31 @@ namespace WFASifreUretici
             n_rakamSayisi.Maximum = 8;
             n_maxAyniKarakterSayisi.Minimum = 0;
             n_maxAyniKarakterSayisi.Maximum = 2;
-            AyarlariGetir();
+            AyarlardanGetir();
         }
 
-        int karakterSayisi, rakamSayisi, maxAyniKarakterSayisi;
-        bool sifreSonuSayiEkleme, agresifMod;
-        bool ayarOkuma = false;
-        void AyarlariGetir()
+        bool ayarlarGetiriliyor = false;
+        void AyarlardanGetir()
         {
-            try
+            ayarlarGetiriliyor = true;
+            n_karakterSayisi.Value = ayarlar.KarakterSayisi;
+            n_rakamSayisi.Value = ayarlar.RakamSayisi;
+            n_maxAyniKarakterSayisi.Value = ayarlar.MaxAyniKarakterSayisi;
+            cb_SayiUretme.Checked = ayarlar.SifreSonuSayiEkleme;
+            cb_AgresifMod.Checked = ayarlar.AgresifMod;
+            ayarlarGetiriliyor = false;
+        }
+
+        void AyarlariDuzenle()
+        {
+            if (!ayarlarGetiriliyor)
             {
-                string dosyaKonumu = Path.Combine(Application.StartupPath, "ayar.ini");
-                if (File.Exists(dosyaKonumu))
-                {
-                    using (FileStream fs = new FileStream(dosyaKonumu, FileMode.Open, FileAccess.Read))
-                    {
-                        using (StreamReader sr = new StreamReader(fs))
-                        {
-                            try
-                            {
-                                ayarOkuma = true;
-                                n_karakterSayisi.Value = karakterSayisi = Convert.ToInt32(sr.ReadLine());
-                                n_rakamSayisi.Value = rakamSayisi = Convert.ToInt32(sr.ReadLine());
-                                n_maxAyniKarakterSayisi.Value = maxAyniKarakterSayisi = Convert.ToInt32(sr.ReadLine());
-
-                                string metin = sr.ReadLine();
-                                string metin2 = sr.ReadLine();
-                                if (metin != null && metin2 != null)
-                                {
-                                    cb_SayiUretme.Checked = sifreSonuSayiEkleme = Convert.ToBoolean(metin);
-                                    cb_AgresifMod.Checked = agresifMod = Convert.ToBoolean(metin2);
-                                }
-                                else
-                                {
-                                    MessageBox.Show("Ayarlar okunurken bir sorun oluştu. Bu nedenle varsayılan ayarlar geçerli olacaktır.", "Hata Oluştu", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                    VarsayılanAyarlaraDon();
-                                }
-                                sr.Close();
-
-                            }
-                            catch (ArgumentOutOfRangeException e)
-                            {
-                                sr.Close();
-                                fs.Close();
-                                MessageBox.Show("Ayarlar okunurken sorun oluştu. Bu nedenle varsayılan ayarlar geçerli olacaktır. Hata detayı: " + e.Message, "Veri Okuma Hatası", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                VarsayılanAyarlaraDon();
-                            }
-                        }
-                        ayarOkuma = false;
-                        fs.Close();
-                        AyarlariDogrula();
-                    }
-                }
-                else
-                {
-                    VarsayılanAyarlaraDon();
-                    AyarlariKaydet();
-                }
+                ayarlar.KarakterSayisi = Convert.ToInt32(n_karakterSayisi.Value);
+                ayarlar.RakamSayisi = Convert.ToInt32(n_rakamSayisi.Value);
+                ayarlar.MaxAyniKarakterSayisi = Convert.ToInt32(n_maxAyniKarakterSayisi.Value);
+                ayarlar.SifreSonuSayiEkleme = cb_SayiUretme.Checked;
+                ayarlar.AgresifMod = cb_AgresifMod.Checked;
             }
-            catch (Exception e)
-            {
-                MessageBox.Show("Ayarlar okunurken bir sorun oluştu. Bu nedenle varsayılan ayarlar geçerli olacaktır. Hata detayı: " + e.Message, "Hata Oluştu", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                VarsayılanAyarlaraDon();
-                AyarlariKaydet();
-            }
-        }
-
-        void AyarlariDogrula()
-        {
-            bool hata = false;
-            if (n_karakterSayisi.Value < 8 || n_karakterSayisi.Value > 16) hata = true;
-            if (n_rakamSayisi.Value < 4 || n_rakamSayisi.Value > 8) hata = true;
-            if (n_maxAyniKarakterSayisi.Value < 0 || n_maxAyniKarakterSayisi.Value > 2) hata = true;
-            if (hata) VarsayılanAyarlaraDon();
-        }
-
-        void VarsayılanAyarlaraDon()
-        {
-            n_karakterSayisi.Value = 10;
-            n_rakamSayisi.Value = 4;
-            n_maxAyniKarakterSayisi.Value = 1;
-            cb_SayiUretme.Checked = false;
-            cb_AgresifMod.Checked = false;
-        }
-
-        void AyarlariKaydet()
-        {
-            if (ayarOkuma) return;               
-            try
-            {
-                string dosyaKonumu = Path.Combine(Application.StartupPath, "ayar.ini");
-                using (FileStream fs = new FileStream(dosyaKonumu, FileMode.Create, FileAccess.Write))
-                {
-                    using (StreamWriter sw = new StreamWriter(fs))
-                    {
-                        sw.Write("" + n_karakterSayisi.Value + "\n" + n_rakamSayisi.Value + "\n" + n_maxAyniKarakterSayisi.Value + "\n" + cb_SayiUretme.Checked + "\n" + cb_AgresifMod.Checked);
-                        sw.Flush();
-                        sw.Close();
-                    }
-                    fs.Close();
-                }
-            }
-            catch (Exception e)
-            {
-                DialogResult dialogResultKaydet = new DialogResult();
-                dialogResultKaydet = MessageBox.Show("Ayarlar kaydedilirken bir sorun oluştu. Hata detayı:  " + e.Message + "Varsayılan ayarları kullanmak için Evet'i, " +
-                    "değişiklikleri geri almak için Hayır'ı seçiniz.", "Hata Oluştu", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
-                if (dialogResultKaydet == DialogResult.Yes) VarsayılanAyarlaraDon();
-                else OncekiAyarlaraDon();
-            }
-        }
-
-        private void OncekiAyarlaraDon()
-        {
-            n_karakterSayisi.Value = karakterSayisi;
-            n_rakamSayisi.Value = rakamSayisi;
-            n_maxAyniKarakterSayisi.Value = maxAyniKarakterSayisi;
-            cb_SayiUretme.Checked = sifreSonuSayiEkleme;
-            cb_AgresifMod.Checked = agresifMod;
         }
 
         private void btn_Yardim_Click(object sender, EventArgs e)
@@ -152,19 +60,30 @@ namespace WFASifreUretici
 
         private void btn_OncekiAyarlaraDon_Click(object sender, EventArgs e)
         {
-            OncekiAyarlaraDon();
+            ayarlar.AyarlariGetir();
+            AyarlardanGetir();
         }
 
         private void btn_VarsayilanAyarlar_Click(object sender, EventArgs e)
         {
-            VarsayılanAyarlaraDon();
+            ayarlar.VarsayilanAyarlaraDon();
+            AyarlardanGetir();
         }
 
-        private void SaveChanges(object sender, EventArgs e)
+        private void DegisklikleriUygula(object sender, EventArgs e)
         {
             if (cb_SayiUretme.Checked) n_rakamSayisi.Enabled = false;
             else n_rakamSayisi.Enabled = true;
-            AyarlariKaydet();
+            AyarlariDuzenle();
+        }
+
+        private void FormAyar_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (ayarlar.Kaydet() == false)
+            {
+                AyarlardanGetir();
+                e.Cancel = true;
+            }
         }
     }
 }

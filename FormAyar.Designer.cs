@@ -66,7 +66,7 @@ namespace WFASifreUretici
             0,
             0,
             0});
-            this.n_maxAyniKarakterSayisi.ValueChanged += new System.EventHandler(this.SaveChanges);
+            this.n_maxAyniKarakterSayisi.ValueChanged += new System.EventHandler(this.DegisklikleriUygula);
             // 
             // n_karakterSayisi
             // 
@@ -79,7 +79,7 @@ namespace WFASifreUretici
             0,
             0,
             0});
-            this.n_karakterSayisi.ValueChanged += new System.EventHandler(this.SaveChanges);
+            this.n_karakterSayisi.ValueChanged += new System.EventHandler(this.DegisklikleriUygula);
             // 
             // lbl_Karakter
             // 
@@ -120,7 +120,7 @@ namespace WFASifreUretici
             this.cb_SayiUretme.TabIndex = 4;
             this.cb_SayiUretme.Text = "Şifre sonunda - ile sayı üretme";
             this.cb_SayiUretme.UseVisualStyleBackColor = true;
-            this.cb_SayiUretme.CheckedChanged += new System.EventHandler(this.SaveChanges);
+            this.cb_SayiUretme.CheckedChanged += new System.EventHandler(this.DegisklikleriUygula);
             // 
             // n_rakamSayisi
             // 
@@ -133,7 +133,7 @@ namespace WFASifreUretici
             0,
             0,
             0});
-            this.n_rakamSayisi.ValueChanged += new System.EventHandler(this.SaveChanges);
+            this.n_rakamSayisi.ValueChanged += new System.EventHandler(this.DegisklikleriUygula);
             // 
             // lbl_SayiAdet
             // 
@@ -154,7 +154,7 @@ namespace WFASifreUretici
             this.cb_AgresifMod.TabIndex = 5;
             this.cb_AgresifMod.Text = "Agresif modu aktif et";
             this.cb_AgresifMod.UseVisualStyleBackColor = true;
-            this.cb_AgresifMod.CheckedChanged += new System.EventHandler(this.SaveChanges);
+            this.cb_AgresifMod.CheckedChanged += new System.EventHandler(this.DegisklikleriUygula);
             // 
             // btn_Yardim
             // 
@@ -191,6 +191,7 @@ namespace WFASifreUretici
             this.Name = "FormAyar";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Ayarlar Ekranı";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormAyar_FormClosing);
             this.Load += new System.EventHandler(this.FormAyar_Load);
             ((System.ComponentModel.ISupportInitialize)(this.n_maxAyniKarakterSayisi)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.n_karakterSayisi)).EndInit();
